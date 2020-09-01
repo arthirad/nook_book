@@ -17,8 +17,40 @@ defmodule NookBook.ACNH.Cache do
     Private.record_from_cache(:bug_image, :bug_image, id)
   end
 
+  def fish() do
+    Private.list_from_cache(:fish, :fish)
+  end
+
+  def fish(id) do
+    Private.record_from_cache(:fish, :fish, id)
+  end
+
+  def fish_icon(id) do
+    Private.record_from_cache(:fish_icon, :fish_icon, id)
+  end
+
+  def fish_image(id) do
+    Private.record_from_cache(:fish_image, :fish_image, id)
+  end
+
+  def sea_creatures() do
+    Private.list_from_cache(:sea_creature, :sea_creatures)
+  end
+
+  def sea_creature(id) do
+    Private.record_from_cache(:sea_creature, :sea_creature, id)
+  end
+
+  def sea_creature_icon(id) do
+    Private.record_from_cache(:sea_creature_icon, :sea_creature_icon, id)
+  end
+
+  def sea_creature_image(id) do
+    Private.record_from_cache(:sea_creature_image, :sea_creature_image, id)
+  end
+
   defmodule Private do
-    alias NookBook.ACNH.API.Client
+    alias NookBook.ACNH.API.Client, as: Client
     alias NookBook.Data.GenericCache, as: Cache
 
     def list_from_cache(namespace, function) do
@@ -27,8 +59,9 @@ defmodule NookBook.ACNH.Cache do
       |> case do
         [] ->
           apply(Client, function, [])
-          |> Enum.reject(&is_nil(&1["id"]))
+          |> Enum.reject(fn record -> is_nil(record["id"]) end)
           |> Enum.map(&Cache.set({namespace, &1["id"]}, &1))
+
         list ->
           list
       end
@@ -42,6 +75,7 @@ defmodule NookBook.ACNH.Cache do
         nil ->
           record = apply(Client, function, [id])
           Cache.set({namespace, id}, record)
+
         record ->
           record
       end
